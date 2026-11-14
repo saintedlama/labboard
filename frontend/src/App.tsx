@@ -14,11 +14,15 @@ export function App() {
   const [route, setRoute] = useState(() => parseRoute(window.location.pathname));
 
   useEffect(() => {
-    const onPopState = () => {
+    const onLocationChange = () => {
       setRoute(parseRoute(window.location.pathname));
     };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    window.addEventListener("popstate", onLocationChange);
+    window.addEventListener("hashchange", onLocationChange);
+    return () => {
+      window.removeEventListener("popstate", onLocationChange);
+      window.removeEventListener("hashchange", onLocationChange);
+    };
   }, []);
 
   const navigate = useCallback((path: string) => {

@@ -12,7 +12,7 @@ watch_debounce = "500ms"
 
 [[process]]
 name = "frontend"
-cmd = "npm run dev"
+cmd = "corepack pnpm dev"
 cwd = "./frontend"
 port = 5173
 depends_on = ["backend"]

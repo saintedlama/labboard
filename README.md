@@ -1,52 +1,34 @@
-# labboard 📋🎨
+# labboard
 
-> **Self-hosted Excalidraw with persistence in a single binary.**  
-> Built for homelabs — no auth, no cloud dependencies, no fluff.
+A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace designed for your homelab. `labboard` combines the official `@excalidraw/excalidraw` React component on the frontend with event-driven persistence to a Go backend with an embedded SQLite database — packaged into a single, dependency-free binary.
 
-`labboard` couples the official `@excalidraw/excalidraw` React component with a lightweight Go backend backed by SQLite. All frontend assets are embedded into the Go binary at compile time, giving you a zero-dependency, single-file server that persists your boards, sketches, and diagrams right on your home server.
-
----
-
-## ✨ Features
-
-- **Full Excalidraw Canvas**: Powered by the official `@excalidraw/excalidraw` React component.
-- **Persistent Boards**: Canvas events automatically save elements and state into an embedded SQLite database.
-- **Board Management**: Simple dashboard to view, filter, create, and delete boards with:
-  - Title & description
-  - Custom tags
-  - Created & updated timestamps
-- **Single Binary Deployment**: Go embeds the compiled React SPA using `go:embed`. No separate frontend server or static file hosting required.
-- **Homelab First**:
-  - No authentication, accounts, or telemetry.
-  - Safe by default: binds strictly to `127.0.0.1` unless configured otherwise.
-  - Sits neatly behind Tailscale, WireGuard, Cloudflare Access, or a reverse proxy.
-  - Tiny resource footprint and instant startup.
-  - Easy file-based backups (just copy the `.db` file).
-- **Fast Local Development**: Integrated with [Invincible](https://github.com/chris/invincible) to orchestrate Go and React live-reloading during development.
+**No authentication. No cloud telemetry. No fluff.**
 
 ---
 
-## 🎨 Color Scheme (One Dark Pro Night Flat)
+## 🎨 Design & Palette: One Dark Pro Night Flat
 
-The UI adheres strictly to the **One Dark Pro Night Flat** palette ([`zhuangtongfa.Material-theme/one-dark-pro-night-flat`](https://vscodethemes.com/e/zhuangtongfa.Material-theme/one-dark-pro-night-flat)), delivering a seamless, high-contrast flat dark theme designed for extended focus:
+`labboard` adopts the **One Dark Pro Night Flat** color scheme ([VSCode Themes reference](https://vscodethemes.com/e/zhuangtongfa.Material-theme/one-dark-pro-night-flat)) across both the application chrome and the Excalidraw drawing canvas.
 
-### Surface & Backgrounds
+### Color Swatches & Tokens
 
-| Token | Hex | Role |
-|---|---|---|
-| `bg-canvas` | `#16191d` | Main app background, canvas backdrop, and base layer |
-| `bg-surface` | `#1e2227` | Cards, dashboard header, dropdowns, and modal dialogs |
-| `bg-input` | `#1d1f23` | Search boxes, text fields, and tag inputs |
-| `bg-active` | `#23272e` | Active tabs, selected rows, active badges |
-| `bg-hover` | `#2c313a` | Interactive hover state for list items, cards, and buttons |
-| `bg-focus` | `#323842` | Focused row / keyboard selection background |
-
-### Borders & Dividers
+#### Surfaces & Backgrounds
 
 | Token | Hex | Role |
 |---|---|---|
-| `border-subtle` | `#181a1f` | Subtle card borders, dividers, and tab boundaries |
-| `border-default` | `#37393d` | Input boundaries, table dividers, panel borders |
+| `bg-canvas` | `#16191d` | Canvas background, overall window background |
+| `bg-surface` | `#1e2227` | Cards, panels, sidebars, modal overlays |
+| `bg-input` | `#1d1f23` | Search bars, text inputs, dropdown fields |
+| `bg-active` | `#23272e` | Selected items, active navigation buttons |
+| `bg-hover` | `#2c313a` | Hovered list rows, button hover states |
+| `bg-focus` | `#323842` | Focused element background highlight |
+
+#### Borders & Dividers
+
+| Token | Hex | Role |
+|---|---|---|
+| `border-subtle` | `#181a1f` | Inset dividers, subtle list borders |
+| `border-default` | `#37393d` | Standard card and panel borders |
 | `border-focus` | `#528bff` | Focused input ring and active tab indicator |
 
 ### Typography
@@ -119,64 +101,61 @@ The UI adheres strictly to the **One Dark Pro Night Flat** palette ([`zhuangtong
 │  │  • Auto-save via      │       │                       │  │
 │  │    change events      │       └──────────┬────────────┘  │
 │  └───────────────────────┘                  │               │
-│                                             ▼               │
-│                                    ┌─────────────────┐      │
-│                                    │   SQLite File   │      │
-│                                    │ (labboard.db)   │      │
-│                                    └─────────────────┘      │
-└─────────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────┼───────────────┘
+                                              ▼
+                                   ┌─────────────────────┐
+                                   │ SQLite DB (WAL Mode)│
+                                   │    labboard.db      │
+                                   └─────────────────────┘
 ```
 
-### Data Model
-
-Each board is stored with metadata and serialized scene data:
-
-| Field | Type | Description |
-|---|---|---|
-| `id` | `TEXT PRIMARY KEY` | Unique UUID or slug for the board |
-| `title` | `TEXT NOT NULL` | Human-readable title |
-| `tags` | `TEXT` | Comma-separated or JSON array of tags |
-| `data` | `BLOB / JSON` | Serialized Excalidraw elements & state |
-| `created_at` | `DATETIME` | Timestamp when the board was created |
-| `updated_at` | `DATETIME` | Timestamp of the most recent save |
-
-### REST API
-
-- `GET /api/boards` — List all boards (with optional tag filtering)
-- `POST /api/boards` — Create a new board
-- `GET /api/boards/:id` — Retrieve a board by ID (including canvas scene data)
-- `PUT /api/boards/:id` — Update board title, tags, and canvas data
-- `DELETE /api/boards/:id` — Remove a board
+- **Single Binary**: Frontend assets are compiled into static files and embedded directly into the Go executable via `embed.FS`.
+- **Zero Configuration**: Starts immediately with local defaults; persistence just works via SQLite.
+- **Auto-Save Engine**: Excalidraw change events are debounced and synchronized seamlessly to the backend with save status tracking.
+- **REST API**:
+  - `GET /api/boards` — List boards (id, title, tags, createdAt, updatedAt)
+  - `POST /api/boards` — Create a new board
+  - `GET /api/boards/:id` — Get board metadata and full Excalidraw scene data
+  - `PUT /api/boards/:id` — Update board title, tags, or scene elements/state
+  - `DELETE /api/boards/:id` — Delete a board
+  - `GET /api/library` — Get shared Excalidraw library items
+  - `PUT /api/library` — Save/update shared Excalidraw library items
 
 ---
 
 ## 🚀 Quick Start
 
-### Running the Binary
+### Running with Docker
 
-```bash
-# Run with defaults (listens on 127.0.0.1:8080, db at ./data/labboard.db)
-./labboard
-
-# Custom port and data directory
-PORT=3000 DATA_DIR=/var/lib/labboard ./labboard
-
-# Or with CLI flags
-./labboard -host 0.0.0.0 -port 8080 -data-dir /var/lib/labboard
-```
-
-Open `http://127.0.0.1:8080` in your browser.
-
-### Docker
+Run `labboard` using Docker with SQLite data persisted in a named volume or local directory:
 
 ```bash
 docker run -d \
   --name labboard \
   -p 8080:8080 \
-  -v $(pwd)/data:/data \
-  -e HOST=0.0.0.0 \
-  -e DATA_DIR=/data \
-  labboard:latest
+  -v labboard-data:/data \
+  ghcr.io/saintedlama/labboard:latest
+```
+
+Open `http://localhost:8080` in your browser.
+
+### Docker Compose
+
+```yaml
+services:
+  labboard:
+    image: ghcr.io/saintedlama/labboard:latest
+    container_name: labboard
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DATA_DIR=/data
+      - DB_NAME=labboard.db
 ```
 
 ---
@@ -222,8 +201,13 @@ DB_NAME=labboard.db
 ### Prerequisites
 
 - [Go](https://go.dev/) (1.23+)
-- [Node.js](https://nodejs.org/) (20+) and `npm`
+- [Node.js](https://nodejs.org/) (20+) with [Corepack](https://nodejs.org/api/corepack.html) and `pnpm`
 - [Invincible](https://github.com/chris/invincible) (process runner for development)
+
+Enable Corepack:
+```bash
+corepack enable
+```
 
 ### Directory Structure
 
@@ -236,12 +220,13 @@ labboard/
 │   ├── config/         # Configuration loading with .env support
 │   ├── db/             # SQLite connection, migrations, and CRUD
 │   └── models/         # Data structures
-├── frontend/           # React + Vite application
+├── frontend/           # React + Vite application (managed with pnpm via Corepack)
 │   ├── src/
 │   │   ├── components/ # BoardsList, BoardEditor
 │   │   ├── styles/     # One Dark Pro Night Flat theme
 │   │   └── api/        # Backend API client
 │   ├── package.json
+│   ├── pnpm-lock.yaml
 │   └── vite.config.ts
 ├── .env.example        # Example environment configuration
 ├── .invincible.toml    # Development process orchestration
@@ -261,7 +246,7 @@ invincible
 ```
 
 Invincible manages:
-1. **Frontend**: Vite dev server on an auto-assigned or designated port with HMR and API proxy.
+1. **Frontend**: Vite dev server managed with `corepack pnpm dev` on an auto-assigned or designated port with HMR and API proxy.
 2. **Backend**: Go API server watching for file changes.
 
 ### Building for Production
@@ -269,10 +254,11 @@ Invincible manages:
 To produce the standalone single binary:
 
 ```bash
-# 1. Build the React frontend
+# 1. Build the React frontend with pnpm (via Corepack)
 cd frontend
-npm install
-npm run build
+corepack enable
+pnpm install
+pnpm run build
 cd ..
 
 # 2. Build the Go binary with embedded assets

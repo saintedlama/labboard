@@ -28,3 +28,6 @@
 # OS / Editor
 .DS_Store
 Thumbs.db
+
+# Development artifacts
+.playwright-mcp/

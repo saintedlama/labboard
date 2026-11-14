@@ -44,11 +44,43 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/boards/{id}", s.handleGetBoard)
 	s.mux.HandleFunc("PUT /api/boards/{id}", s.handleUpdateBoard)
 	s.mux.HandleFunc("DELETE /api/boards/{id}", s.handleDeleteBoard)
+	s.mux.HandleFunc("GET /api/library", s.handleGetLibrary)
+	s.mux.HandleFunc("PUT /api/library", s.handleSaveLibrary)
 	s.mux.HandleFunc("/", s.handleSPA)
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+func (s *Server) handleGetLibrary(w http.ResponseWriter, r *http.Request) {
+	lib, err := s.store.GetLibrary(r.Context())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get library")
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(lib)
+}
+
+func (s *Server) handleSaveLibrary(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "failed to read body")
+		return
+	}
+	if len(body) == 0 || !json.Valid(body) {
+		writeError(w, http.StatusBadRequest, "invalid json body")
+		return
+	}
+	if err := s.store.SaveLibrary(r.Context(), json.RawMessage(body)); err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to save library")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(body)
 }
 
 func (s *Server) handleListBoards(w http.ResponseWriter, r *http.Request) {

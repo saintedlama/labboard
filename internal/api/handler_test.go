@@ -111,3 +111,38 @@ func TestBoardCRUDAndSPAFallback(t *testing.T) {
 		t.Fatalf("expected 404 after delete, got %d", rec.Code)
 	}
 }
+
+func TestLibraryEndpoints(t *testing.T) {
+	srv := setupTestServer(t)
+
+	// 1. Initial get should return empty library
+	req := httptest.NewRequest(http.MethodGet, "/api/library", nil)
+	rec := httptest.NewRecorder()
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+	if !bytes.Contains(rec.Body.Bytes(), []byte("libraryItems")) {
+		t.Fatalf("expected libraryItems key, got %s", rec.Body.String())
+	}
+
+	// 2. Save library items
+	saveBody := `{"libraryItems":[{"id":"item-1","status":"published","elements":[]}]}`
+	req = httptest.NewRequest(http.MethodPut, "/api/library", bytes.NewBufferString(saveBody))
+	rec = httptest.NewRecorder()
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+
+	// 3. Get should return saved items
+	req = httptest.NewRequest(http.MethodGet, "/api/library", nil)
+	rec = httptest.NewRecorder()
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+	if !bytes.Contains(rec.Body.Bytes(), []byte("item-1")) {
+		t.Fatalf("expected saved item in response, got %s", rec.Body.String())
+	}
+}

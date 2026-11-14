@@ -70,7 +70,42 @@ func (s *Store) migrate() error {
 			updated_at TEXT NOT NULL
 		);
 		CREATE INDEX IF NOT EXISTS idx_boards_updated_at ON boards (updated_at DESC);
+		CREATE TABLE IF NOT EXISTS app_settings (
+			key TEXT PRIMARY KEY,
+			value TEXT NOT NULL,
+			updated_at TEXT NOT NULL
+		);
 	`)
+	return err
+}
+
+func (s *Store) GetLibrary(ctx context.Context) (json.RawMessage, error) {
+	var val string
+	err := s.db.QueryRowContext(ctx, `SELECT value FROM app_settings WHERE key = 'library'`).Scan(&val)
+	if errors.Is(err, sql.ErrNoRows) {
+		return json.RawMessage(`{"libraryItems":[]}`), nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if strings.TrimSpace(val) == "" {
+		return json.RawMessage(`{"libraryItems":[]}`), nil
+	}
+	return json.RawMessage(val), nil
+}
+
+func (s *Store) SaveLibrary(ctx context.Context, data json.RawMessage) error {
+	if len(data) == 0 || !json.Valid(data) {
+		data = json.RawMessage(`{"libraryItems":[]}`)
+	}
+	now := time.Now().UTC().Format(time.RFC3339Nano)
+	_, err := s.db.ExecContext(ctx, `
+		INSERT INTO app_settings (key, value, updated_at)
+		VALUES ('library', ?, ?)
+		ON CONFLICT(key) DO UPDATE SET
+			value = excluded.value,
+			updated_at = excluded.updated_at
+	`, string(data), now)
 	return err
 }
 

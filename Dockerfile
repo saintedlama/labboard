@@ -1,10 +1,11 @@
 # Stage 1: Build the React frontend
 FROM node:22-alpine AS frontend-builder
 WORKDIR /app/frontend
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci
+RUN corepack enable
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN corepack pnpm install --frozen-lockfile
 COPY frontend/ ./
-RUN npm run build
+RUN corepack pnpm run build
 
 # Stage 2: Build the single Go binary with embedded frontend assets
 FROM golang:alpine AS backend-builder
