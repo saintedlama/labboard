@@ -1,5 +1,7 @@
 .git
 .invincible.port
+.playwright-mcp/
+screenshots/
 .env
 .env.*
 data/

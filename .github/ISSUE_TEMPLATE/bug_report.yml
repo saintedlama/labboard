@@ -1,0 +1,49 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in LabBoard
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug in LabBoard! Please provide as much detail as possible so we can reproduce it.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened vs. what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Clear steps to reproduce the issue
+      placeholder: |
+        1. Open LabBoard...
+        2. Click '...'
+        3. See error...
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment Method
+      options:
+        - Docker (ghcr.io/saintedlama/labboard)
+        - Single Binary / Built from Source
+        - Local Development (Invincible / Vite)
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, and version or commit SHA
+      placeholder: e.g. Linux amd64, Firefox 132, Docker latest
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: Paste any relevant server logs or browser console output
+      render: shell
