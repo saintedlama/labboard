@@ -1,6 +1,6 @@
-# labboard
+# LabBoard
 
-A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace designed for your homelab. `labboard` combines the official `@excalidraw/excalidraw` React component on the frontend with event-driven persistence to a Go backend with an embedded SQLite database — packaged into a single, dependency-free binary.
+A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace designed for your homelab. LabBoard combines the official `@excalidraw/excalidraw` React component on the frontend with event-driven persistence to a Go backend with an embedded SQLite database — packaged into a single, dependency-free binary.
 
 **No authentication. No cloud telemetry. No fluff.**
 
@@ -8,7 +8,7 @@ A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace design
 
 ## 🎨 Design & Palette: One Dark Pro Night Flat
 
-`labboard` adopts the **One Dark Pro Night Flat** color scheme ([VSCode Themes reference](https://vscodethemes.com/e/zhuangtongfa.Material-theme/one-dark-pro-night-flat)) across both the application chrome and the Excalidraw drawing canvas.
+LabBoard adopts the **One Dark Pro Night Flat** color scheme ([VSCode Themes reference](https://vscodethemes.com/e/zhuangtongfa.Material-theme/one-dark-pro-night-flat)) across both the application chrome and the Excalidraw drawing canvas.
 
 ### Color Swatches & Tokens
 
@@ -90,7 +90,7 @@ A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace design
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      labboard Binary                        │
+│                      LabBoard Binary                        │
 │                                                             │
 │  ┌───────────────────────┐       ┌───────────────────────┐  │
 │  │     React Frontend    │       │       Go Backend      │  │
@@ -127,7 +127,7 @@ A self-hosted, lightweight [Excalidraw](https://excalidraw.com) workspace design
 
 ### Running with Docker
 
-Run `labboard` using Docker with SQLite data persisted in a named volume or local directory:
+Run LabBoard using Docker with SQLite data persisted in a named volume or local directory:
 
 ```bash
 docker run -d \
@@ -162,7 +162,7 @@ services:
 
 ## ⚙️ Configuration
 
-`labboard` loads configuration from `.env` files, environment variables, and CLI flags with the following precedence (highest to lowest):
+LabBoard loads configuration from `.env` files, environment variables, and CLI flags with the following precedence (highest to lowest):
 
 1. **CLI flags** (`-host`, `-port`, `-data-dir`, `-db-name`, `-env`)
 2. **Environment variables** (`HOST`, `PORT`, `DATA_DIR`, `DB_NAME`, `LABBOARD_ENV_FILE`)

@@ -1,4 +1,5 @@
-:root {
+:root,
+:root[data-theme="dark"] {
   /* Surfaces (One Dark Pro Night Flat) */
   --color-bg-canvas: #16191d;
   --color-bg-surface: #1e2227;
@@ -10,14 +11,58 @@
   /* Borders */
   --color-border-subtle: #181a1f;
   --color-border-default: #37393d;
+  --color-border-strong: #9da5b4;
+  --color-border-pill: #2e333c;
+  --color-border-pill-hover: #6b7385;
+  --color-border-active: #b8bfc9;
+  --color-border-card-hover: #4b5263;
   --color-border-focus: #528bff;
 
   /* Typography */
   --color-text-primary: #abb2bf;
   --color-text-bright: #d7dae0;
   --color-text-muted: #667187;
+  --color-text-hover: #ffffff;
+  --color-icon-muted: #8b93a5;
+  --color-shortcut-hint: #636b78;
+  --color-shortcut-hint-hover: #9da5b4;
 
-  /* Accents */
+  /* Interactive Pills & Primary Button */
+  --color-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --color-pill-active-hover-bg: rgba(255, 255, 255, 0.2);
+  --color-btn-primary-bg: #d7dae0;
+  --color-btn-primary-hover-bg: #ffffff;
+  --color-btn-primary-text: #16191d;
+  --color-btn-primary-hover-text: #0e1013;
+  --color-btn-primary-shadow: rgba(255, 255, 255, 0.16);
+  --color-focus-ring: rgba(215, 218, 224, 0.1);
+
+  /* Floating Overlays, Modals & Shadows */
+  --color-floating-bar-bg: rgba(30, 34, 39, 0.94);
+  --color-backdrop: rgba(10, 12, 15, 0.72);
+  --color-shadow-floating: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --color-shadow-floating-hover: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --color-shadow-dropdown: 0 16px 36px rgba(0, 0, 0, 0.55);
+  --color-shadow-modal: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --color-shadow-status: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* Scrollbars */
+  --color-scrollbar-thumb: rgba(78, 86, 102, 0.38);
+  --color-scrollbar-thumb-hover: rgba(90, 99, 117, 0.5);
+
+  /* Toggle Switches & Swatches */
+  --color-switch-bg: #23272e;
+  --color-switch-border: #3b4048;
+  --color-switch-thumb: #8b93a5;
+  --color-switch-checked-bg: #d7dae0;
+  --color-switch-checked-hover-bg: #ffffff;
+  --color-switch-checked-thumb: #16191d;
+  --color-swatch-border: #3b4048;
+  --color-swatch-active-border: #ffffff;
+  --color-swatch-active-ring: rgba(255, 255, 255, 0.25);
+
+  /* Accents & Status */
+  --color-error-bg: rgba(224, 108, 117, 0.12);
   --color-accent-blue: #61afef;
   --color-accent-purple: #c678dd;
   --color-accent-green: #98c379;
@@ -25,6 +70,79 @@
   --color-accent-yellow: #e5c07b;
   --color-accent-red: #e06c75;
   --color-accent-cyan: #56b6c2;
+}
+
+:root[data-theme="light"] {
+  /* Surfaces (Clean Monochrome Light) */
+  --color-bg-canvas: #f6f7f9;
+  --color-bg-surface: #ffffff;
+  --color-bg-input: #f8f9fb;
+  --color-bg-active: #eceff4;
+  --color-bg-hover: #f1f3f6;
+  --color-bg-focus: #e3e7ee;
+
+  /* Borders */
+  --color-border-subtle: #e5e7eb;
+  --color-border-default: #d1d5db;
+  --color-border-strong: #6b7280;
+  --color-border-pill: #d5d9e0;
+  --color-border-pill-hover: #9ca3af;
+  --color-border-active: #374151;
+  --color-border-card-hover: #9ca3af;
+  --color-border-focus: #4b5563;
+
+  /* Typography */
+  --color-text-primary: #374151;
+  --color-text-bright: #111827;
+  --color-text-muted: #6b7280;
+  --color-text-hover: #0f1115;
+  --color-icon-muted: #6b7280;
+  --color-shortcut-hint: #6b7280;
+  --color-shortcut-hint-hover: #374151;
+
+  /* Interactive Pills & Primary Button */
+  --color-pill-active-bg: rgba(17, 24, 39, 0.09);
+  --color-pill-active-hover-bg: rgba(17, 24, 39, 0.14);
+  --color-btn-primary-bg: #1e2227;
+  --color-btn-primary-hover-bg: #0f1115;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-hover-text: #ffffff;
+  --color-btn-primary-shadow: rgba(15, 23, 42, 0.16);
+  --color-focus-ring: rgba(17, 24, 39, 0.08);
+
+  /* Floating Overlays, Modals & Shadows */
+  --color-floating-bar-bg: rgba(255, 255, 255, 0.94);
+  --color-backdrop: rgba(15, 23, 42, 0.35);
+  --color-shadow-floating: 0 4px 14px rgba(15, 23, 42, 0.1);
+  --color-shadow-floating-hover: 0 6px 18px rgba(15, 23, 42, 0.15);
+  --color-shadow-dropdown: 0 14px 32px rgba(15, 23, 42, 0.14);
+  --color-shadow-modal: 0 20px 50px rgba(15, 23, 42, 0.18);
+  --color-shadow-status: 0 2px 8px rgba(15, 23, 42, 0.08);
+
+  /* Scrollbars */
+  --color-scrollbar-thumb: rgba(107, 114, 128, 0.35);
+  --color-scrollbar-thumb-hover: rgba(107, 114, 128, 0.55);
+
+  /* Toggle Switches & Swatches */
+  --color-switch-bg: #e2e5eb;
+  --color-switch-border: #c4cad4;
+  --color-switch-thumb: #6b7280;
+  --color-switch-checked-bg: #1e2227;
+  --color-switch-checked-hover-bg: #0f1115;
+  --color-switch-checked-thumb: #ffffff;
+  --color-swatch-border: #cbd0d9;
+  --color-swatch-active-border: #111827;
+  --color-swatch-active-ring: rgba(17, 24, 39, 0.2);
+
+  /* Accents & Status */
+  --color-error-bg: rgba(185, 28, 28, 0.08);
+  --color-accent-blue: #2563eb;
+  --color-accent-purple: #7c3aed;
+  --color-accent-green: #15803d;
+  --color-accent-orange: #b45309;
+  --color-accent-yellow: #a16207;
+  --color-accent-red: #b91c1c;
+  --color-accent-cyan: #0e7490;
 }
 
 * {
@@ -65,12 +183,12 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4e566660;
+  background: var(--color-scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a637580;
+  background: var(--color-scrollbar-thumb-hover);
 }
 
 /* Match Excalidraw dark canvas background to Night Flat */

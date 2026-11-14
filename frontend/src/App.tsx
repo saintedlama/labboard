@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { BoardEditor } from "./components/BoardEditor";
 import { BoardsList } from "./components/BoardsList";
+import {
+  AppTheme,
+  applyDocumentTheme,
+  readStoredTheme,
+  writeStoredTheme,
+} from "./utils/theme";
 
 function parseRoute(pathname: string): { view: "list" } | { view: "board"; id: string } {
   const match = pathname.match(/^\/boards\/([^/]+)\/?$/);
@@ -12,6 +18,16 @@ function parseRoute(pathname: string): { view: "list" } | { view: "board"; id: s
 
 export function App() {
   const [route, setRoute] = useState(() => parseRoute(window.location.pathname));
+  const [theme, setTheme] = useState<AppTheme>(() => readStoredTheme());
+
+  useEffect(() => {
+    applyDocumentTheme(theme);
+  }, [theme]);
+
+  const handleThemeChange = useCallback((nextTheme: AppTheme) => {
+    writeStoredTheme(nextTheme);
+    setTheme(nextTheme);
+  }, []);
 
   useEffect(() => {
     const onLocationChange = () => {
@@ -37,6 +53,8 @@ export function App() {
       <BoardEditor
         boardId={route.id}
         onBack={() => navigate("/")}
+        theme={theme}
+        onThemeChange={handleThemeChange}
       />
     );
   }
@@ -44,6 +62,8 @@ export function App() {
   return (
     <BoardsList
       onOpenBoard={(id) => navigate(`/boards/${encodeURIComponent(id)}`)}
+      theme={theme}
+      onThemeChange={handleThemeChange}
     />
   );
 }

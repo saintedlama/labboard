@@ -15,6 +15,7 @@ import {
   saveLibrary,
   stripAddLibraryUrlParams,
 } from "../api/library";
+import { AppTheme } from "../utils/theme";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 type ExportElements = Parameters<typeof exportScene>[0]["data"]["elements"];
@@ -54,9 +55,10 @@ function getItemSetName(item: LibraryItemData): string | null {
 
 interface LibraryItemPreviewProps {
   item: LibraryItemData;
+  theme: AppTheme;
 }
 
-function LibraryItemPreview({ item }: LibraryItemPreviewProps) {
+function LibraryItemPreview({ item, theme }: LibraryItemPreviewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -103,7 +105,7 @@ function LibraryItemPreview({ item }: LibraryItemPreviewProps) {
           type: "svg",
           data: { elements: nonDeleted },
           config: {
-            theme: "dark",
+            theme,
             canvasBackgroundColor: false,
             padding: 8,
             maxWidthOrHeight: 112,
@@ -133,7 +135,7 @@ function LibraryItemPreview({ item }: LibraryItemPreviewProps) {
     return () => {
       cancelled = true;
     };
-  }, [visible, item]);
+  }, [visible, item, theme]);
 
   return (
     <div ref={hostRef} className="library-card-thumb">
@@ -147,7 +149,11 @@ function LibraryItemPreview({ item }: LibraryItemPreviewProps) {
   );
 }
 
-export function LibrarySection() {
+interface LibrarySectionProps {
+  theme?: AppTheme;
+}
+
+export function LibrarySection({ theme = "dark" }: LibrarySectionProps) {
   const [items, setItems] = useState<LibraryItemData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -562,7 +568,7 @@ export function LibrarySection() {
                     <Trash2 size={14} />
                   </button>
 
-                  <LibraryItemPreview item={item} />
+                  <LibraryItemPreview item={item} theme={theme} />
 
                   <div className="library-card-meta">
                     <span className="library-card-name" title={label}>

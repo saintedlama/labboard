@@ -1,5 +1,5 @@
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
-import { Layers, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Moon, Pencil, Plus, Search, Sun, Trash2, X } from "lucide-react";
 import {
   BoardSummary,
   createBoard,
@@ -7,11 +7,15 @@ import {
   listBoards,
   updateBoard,
 } from "../api/boards";
+import { AppTheme } from "../utils/theme";
 import { ConfirmDialog } from "./ConfirmDialog";
+import logoUrl from "../assets/logo.svg";
 import { LibrarySection } from "./LibrarySection";
 
 interface BoardsListProps {
   onOpenBoard: (id: string) => void;
+  theme: AppTheme;
+  onThemeChange: (theme: AppTheme) => void;
 }
 
 function formatTimestamp(iso: string): string {
@@ -44,7 +48,7 @@ function normalizeTag(raw: string): string {
   return raw.trim().replace(/^#+/, "").replace(/,+$/, "").trim().toLowerCase();
 }
 
-export function BoardsList({ onOpenBoard }: BoardsListProps) {
+export function BoardsList({ onOpenBoard, theme, onThemeChange }: BoardsListProps) {
   const [boards, setBoards] = useState<BoardSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -78,7 +82,7 @@ export function BoardsList({ onOpenBoard }: BoardsListProps) {
   };
 
   useEffect(() => {
-    document.title = "labboard";
+    document.title = "LabBoard";
     void load();
   }, []);
 
@@ -264,21 +268,45 @@ export function BoardsList({ onOpenBoard }: BoardsListProps) {
       <header className="topbar">
         <div className="brand">
           <span className="brand-icon">
-            <Layers size={20} />
+            <img src={logoUrl} alt="" className="brand-logo" />
           </span>
-          <h1 className="brand-title">labboard</h1>
-          <span className="brand-sub">self-hosted excalidraw</span>
+          <h1 className="brand-title">LabBoard</h1>
         </div>
 
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={handleCreate}
-          disabled={creating}
-        >
-          <Plus size={16} />
-          {creating ? "Creating..." : "New Board"}
-        </button>
+        <div className="topbar-actions">
+          <div className="topbar-theme-toggle" role="group" aria-label="Color theme">
+            <button
+              type="button"
+              className={`topbar-theme-btn ${theme === "dark" ? "active" : ""}`}
+              aria-pressed={theme === "dark"}
+              onClick={() => onThemeChange("dark")}
+              title="Dark theme"
+            >
+              <Moon size={13} />
+              <span>Dark</span>
+            </button>
+            <button
+              type="button"
+              className={`topbar-theme-btn ${theme === "light" ? "active" : ""}`}
+              aria-pressed={theme === "light"}
+              onClick={() => onThemeChange("light")}
+              title="Light theme"
+            >
+              <Sun size={13} />
+              <span>Light</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleCreate}
+            disabled={creating}
+          >
+            <Plus size={16} />
+            {creating ? "Creating..." : "New Board"}
+          </button>
+        </div>
       </header>
 
       <main className="main-container">
@@ -431,7 +459,7 @@ export function BoardsList({ onOpenBoard }: BoardsListProps) {
           )}
         </div>
 
-        <LibrarySection />
+        <LibrarySection theme={theme} />
       </main>
 
       {editingBoard && (

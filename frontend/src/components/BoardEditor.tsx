@@ -43,6 +43,7 @@ import {
   saveLibrary,
   stripAddLibraryUrlParams,
 } from "../api/library";
+import { AppTheme } from "../utils/theme";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 type ExcalidrawProps = ComponentProps<typeof Excalidraw>;
@@ -54,10 +55,11 @@ type InitialData = Exclude<ExcalidrawProps["initialData"], (() => unknown) | Pro
 interface BoardEditorProps {
   boardId: string;
   onBack: () => void;
+  theme: AppTheme;
+  onThemeChange: (theme: AppTheme) => void;
 }
 
 type SaveStatus = "saved" | "dirty" | "saving" | "error";
-type CanvasTheme = "dark" | "light";
 
 interface EditorPreferences {
   gridModeEnabled: boolean;
@@ -124,7 +126,7 @@ function writeStoredPreferences(prefs: EditorPreferences): void {
   }
 }
 
-export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
+export function BoardEditor({ boardId, onBack, theme, onThemeChange }: BoardEditorProps) {
   const [board, setBoard] = useState<Board | null>(null);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -138,13 +140,7 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
   const [confirmDialog, setConfirmDialog] = useState<"deleteBoard" | "resetCanvas" | null>(null);
   const [deletingBoard, setDeletingBoard] = useState(false);
   const [deleteBoardError, setDeleteBoardError] = useState<string | null>(null);
-  const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>(() => {
-    try {
-      return localStorage.getItem("labboard_theme") === "light" ? "light" : "dark";
-    } catch {
-      return "dark";
-    }
-  });
+  const [canvasTheme, setCanvasTheme] = useState<AppTheme>(theme);
   const [canvasBg, setCanvasBg] = useState<string>("#ffffff");
   const [preferences, setPreferences] = useState<EditorPreferences>(() => {
     const stored = readStoredPreferences();
@@ -162,18 +158,22 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
   const debounceTimerRef = useRef<number | null>(null);
   const lastSavedTitleRef = useRef<string>("");
   const titleRef = useRef<string>("");
+  const themeRef = useRef<AppTheme>(theme);
+  const canvasThemeRef = useRef<AppTheme>(canvasTheme);
 
   titleRef.current = title;
+  themeRef.current = theme;
+  canvasThemeRef.current = canvasTheme;
 
   // Update browser document title to reflect board title
   useEffect(() => {
     const currentTitle = title.trim();
-    document.title = currentTitle ? `${currentTitle} — labboard` : "Untitled Board — labboard";
+    document.title = currentTitle ? `${currentTitle} — LabBoard` : "Untitled Board — LabBoard";
   }, [title]);
 
   useEffect(() => {
     return () => {
-      document.title = "labboard";
+      document.title = "LabBoard";
     };
   }, []);
 
@@ -327,7 +327,12 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
 
         const loadedTheme = loaded.data?.appState?.theme;
         if (loadedTheme === "light" || loadedTheme === "dark") {
+          canvasThemeRef.current = loadedTheme;
           setCanvasTheme(loadedTheme);
+          onThemeChange(loadedTheme);
+        } else {
+          canvasThemeRef.current = themeRef.current;
+          setCanvasTheme(themeRef.current);
         }
         const loadedBg = loaded.data?.appState?.viewBackgroundColor;
         setCanvasBg(typeof loadedBg === "string" && loadedBg ? loadedBg : "#ffffff");
@@ -354,7 +359,7 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
     return () => {
       cancelled = true;
     };
-  }, [boardId]);
+  }, [boardId, onThemeChange]);
 
   const persistScene = useCallback(
     async (jsonString: string, keepalive = false) => {
@@ -478,17 +483,11 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
       if (!board) return;
 
       if (appState.theme === THEME.DARK || appState.theme === THEME.LIGHT) {
-        setCanvasTheme((prev) => {
-          if (prev !== appState.theme) {
-            try {
-              localStorage.setItem("labboard_theme", appState.theme);
-            } catch {
-              // ignore
-            }
-            return appState.theme;
-          }
-          return prev;
-        });
+        if (appState.theme !== canvasThemeRef.current) {
+          canvasThemeRef.current = appState.theme;
+          setCanvasTheme(appState.theme);
+          onThemeChange(appState.theme);
+        }
       }
 
       if (typeof appState.viewBackgroundColor === "string" && appState.viewBackgroundColor) {
@@ -536,7 +535,7 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
 
       scheduleSave(serialized);
     },
-    [board, scheduleSave]
+    [board, onThemeChange, scheduleSave]
   );
 
   const handleTitleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -670,13 +669,10 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
     });
   };
 
-  const handleSetTheme = (nextTheme: CanvasTheme) => {
+  const handleSetTheme = (nextTheme: AppTheme) => {
+    canvasThemeRef.current = nextTheme;
     setCanvasTheme(nextTheme);
-    try {
-      localStorage.setItem("labboard_theme", nextTheme);
-    } catch {
-      // ignore
-    }
+    onThemeChange(nextTheme);
     excalidrawAPI?.updateScene({
       appState: {
         theme: nextTheme,
@@ -806,6 +802,11 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
   const handleConfirmModalAction = async () => {
     if (confirmDialog === "resetCanvas") {
       excalidrawAPI?.resetScene();
+      excalidrawAPI?.updateScene({
+        appState: {
+          showHints: false,
+        },
+      });
       setConfirmDialog(null);
       return;
     }
@@ -859,6 +860,7 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
       isBindingEnabled: preferences.bindingPreference === "enabled",
       objectsSnapModeEnabled: preferences.objectsSnapModeEnabled,
       isMidpointSnappingEnabled: preferences.isMidpointSnappingEnabled,
+      showHints: false,
     } as NonNullable<InitialData>["appState"],
     files: (board.data?.files ?? {}) as NonNullable<InitialData>["files"],
   };
@@ -894,7 +896,11 @@ export function BoardEditor({ boardId, onBack }: BoardEditorProps) {
                     } else if (excalidrawAPI) {
                       const appState = excalidrawAPI.getAppState();
                       if (appState.theme === THEME.DARK || appState.theme === THEME.LIGHT) {
-                        setCanvasTheme(appState.theme);
+                        if (appState.theme !== canvasThemeRef.current) {
+                          canvasThemeRef.current = appState.theme;
+                          setCanvasTheme(appState.theme);
+                          onThemeChange(appState.theme);
+                        }
                       }
                       if (typeof appState.viewBackgroundColor === "string" && appState.viewBackgroundColor) {
                         setCanvasBg(appState.viewBackgroundColor);
