@@ -1,0 +1,82 @@
+:root {
+  /* Surfaces (One Dark Pro Night Flat) */
+  --color-bg-canvas: #16191d;
+  --color-bg-surface: #1e2227;
+  --color-bg-input: #1d1f23;
+  --color-bg-active: #23272e;
+  --color-bg-hover: #2c313a;
+  --color-bg-focus: #323842;
+
+  /* Borders */
+  --color-border-subtle: #181a1f;
+  --color-border-default: #37393d;
+  --color-border-focus: #528bff;
+
+  /* Typography */
+  --color-text-primary: #abb2bf;
+  --color-text-bright: #d7dae0;
+  --color-text-muted: #667187;
+
+  /* Accents */
+  --color-accent-blue: #61afef;
+  --color-accent-purple: #c678dd;
+  --color-accent-green: #98c379;
+  --color-accent-orange: #d19a66;
+  --color-accent-yellow: #e5c07b;
+  --color-accent-red: #e06c75;
+  --color-accent-cyan: #56b6c2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+a {
+  color: var(--color-accent-blue);
+  text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4e566660;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a637580;
+}
+
+/* Match Excalidraw dark canvas background to Night Flat */
+.excalidraw.theme--dark {
+  --color-surface-lowest: var(--color-bg-canvas);
+  --color-surface-low: var(--color-bg-surface);
+  --color-surface-mid: var(--color-bg-active);
+  --color-surface-high: var(--color-bg-hover);
+}

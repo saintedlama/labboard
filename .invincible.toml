@@ -1,0 +1,18 @@
+[project]
+name = "labboard"
+
+[[process]]
+name = "backend"
+cmd = "go run ./cmd/labboard"
+port = 8080
+watch = ["cmd", "internal", "go.mod"]
+watch_include = ["*.go", "go.mod"]
+watch_exclude = ["data", "frontend", ".git"]
+watch_debounce = "500ms"
+
+[[process]]
+name = "frontend"
+cmd = "npm run dev"
+cwd = "./frontend"
+port = 5173
+depends_on = ["backend"]
