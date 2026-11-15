@@ -4,6 +4,7 @@
 
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg-canvas);
@@ -733,7 +734,9 @@
 .editor-loading,
 .editor-error {
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
+  width: 100dvw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -749,21 +752,25 @@
 }
 
 .editor-shell {
+  position: fixed;
+  inset: 0;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
-  position: relative;
+  width: 100dvw;
   background-color: var(--color-bg-canvas);
   overflow: hidden;
 }
 
 .editor-canvas-wrap {
-  height: 100vh;
-  width: 100vw;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.excalidraw .App-bottom-bar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ==========================================================================
@@ -779,7 +786,7 @@
 
 /* Prevent wide top-left toolbar from overlapping middle tools or pushing top-right off-screen */
 .excalidraw .App-menu_top {
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, auto) !important;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, auto) !important;
   gap: 12px !important;
 }
 
@@ -800,9 +807,9 @@
 .excalidraw .excalidraw-ui-top-left {
   position: relative !important;
   z-index: 100 !important;
-  pointer-events: auto !important;
+  pointer-events: none !important;
   min-width: 0;
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
 }
 
@@ -867,7 +874,9 @@
   top: calc(100% + 8px);
   left: -1px;
   width: 292px;
+  max-width: calc(100vw - 24px);
   max-height: calc(100vh - 76px);
+  max-height: calc(100dvh - 76px);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-scrollbar-thumb) transparent;
@@ -1248,7 +1257,34 @@
 .top-right-save-wrap {
   display: flex;
   align-items: center;
+  gap: 6px;
   margin-right: 4px;
+}
+
+.excalidraw .btn-mobile-library {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin: 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-floating-bar-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-icon-muted);
+  box-shadow: var(--color-shadow-status);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.excalidraw .btn-mobile-library:hover,
+.excalidraw .btn-mobile-library.active {
+  background-color: var(--color-bg-focus);
+  border-color: var(--color-border-default);
+  color: var(--color-text-hover);
 }
 
 .save-status {

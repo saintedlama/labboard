@@ -13,6 +13,7 @@ import "@excalidraw/excalidraw/index.css";
 import {
   AlertCircle,
   ArrowLeft,
+  BookOpen,
   Check,
   Coffee,
   Crosshair,
@@ -882,6 +883,17 @@ export function BoardEditor({ boardId, onBack, theme, onThemeChange }: BoardEdit
             canvasActions: {
               toggleTheme: true,
             },
+            getFormFactor: (editorWidth, editorHeight) => {
+              if (editorWidth <= 740 || (editorHeight < 500 && editorWidth < 1000)) {
+                return "phone";
+              }
+              const min = Math.min(editorWidth, editorHeight);
+              const max = Math.max(editorWidth, editorHeight);
+              if (min >= 600 && max <= 1180) {
+                return "tablet";
+              }
+              return "desktop";
+            },
           }}
           renderTopLeftUI={() => (
             <div className="editor-floating-bar" role="toolbar" aria-label="Board controls">
@@ -1296,7 +1308,7 @@ export function BoardEditor({ boardId, onBack, theme, onThemeChange }: BoardEdit
               </div>
             </div>
           )}
-          renderTopRightUI={() => (
+          renderTopRightUI={(isMobile, appState) => (
             <div className="top-right-save-wrap">
               <span
                 className={`save-status ${saveStatus}`}
@@ -1328,6 +1340,31 @@ export function BoardEditor({ boardId, onBack, theme, onThemeChange }: BoardEdit
                   </>
                 )}
               </span>
+              {isMobile && !appState.viewModeEnabled && (
+                <button
+                  type="button"
+                  className={`btn-mobile-library ${
+                    appState.openSidebar?.name === "default" &&
+                    appState.openSidebar?.tab === "library"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    excalidrawAPI?.toggleSidebar({
+                      name: "default",
+                      tab: "library",
+                    });
+                  }}
+                  title="Library"
+                  aria-label="Library"
+                  aria-pressed={
+                    appState.openSidebar?.name === "default" &&
+                    appState.openSidebar?.tab === "library"
+                  }
+                >
+                  <BookOpen size={15} />
+                </button>
+              )}
             </div>
           )}
         >
